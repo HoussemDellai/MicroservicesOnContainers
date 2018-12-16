@@ -9,7 +9,7 @@ export class FetchBasketComponent {
 
   public basketItems: BasketItem[];
 
-  private basketUrl = "https://localhost:5101/";
+  private basketUrl = ApiUrls.basketApiUrl; // "https://localhost:5101/";
 
   constructor(http: HttpClient) {
 
@@ -26,11 +26,4 @@ export class FetchBasketComponent {
 
 
   }
-}
-
-interface BasketItem {
-  id: number;
-  productId: number;
-  name: string;
-  //price: number;
 }

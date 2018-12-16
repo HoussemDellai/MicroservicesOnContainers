@@ -1,5 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Product } from '../models/product.model';
+import { BasketItem } from '../models/basketItem.model';
 
 @Component({
   selector: 'app-fetch-products',
@@ -9,9 +11,9 @@ export class FetchProductsComponent {
 
   public products: Product[];
 
-  private catalogUrl = "https://localhost:5001/";
+  private catalogUrl = ApiUrls.catalogApiUrl; // "https://localhost:5001/";
 
-  private basketUrl = "https://localhost:44387/";
+  private basketUrl = ApiUrls.basketApiUrl; // "https://localhost:44387/";
 
   constructor(private http: HttpClient) {
 
@@ -20,23 +22,20 @@ export class FetchProductsComponent {
       {
         console.log(result);
         this.products = result;
-
       }, error => console.error(error));
   }
 
-  public addToBasket() {
+  public addToBasket()
+  {
+    basketItem: BasketItem = new BasketItem
+    {
 
-    this.http.get<Product[]>(this.catalogUrl + 'api/Products/')
-      .subscribe(result => {
-        console.log(result);
-        this.products = result;
+    }
 
+    this.http.post<BasketItem>(this.basketUrl + 'api/BasketItems/', )
+      .subscribe(result =>
+      {
+        
       }, error => console.error(error));
   }
-}
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
 }
