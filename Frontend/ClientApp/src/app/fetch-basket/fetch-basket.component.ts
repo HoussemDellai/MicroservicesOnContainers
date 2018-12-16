@@ -21,6 +21,11 @@ export class FetchBasketComponent {
 
       }, error => console.error(error));
   }
+
+  public removeFromBasket() {
+
+
+  }
 }
 
 interface BasketItem {
