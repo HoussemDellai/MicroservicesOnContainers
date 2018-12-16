@@ -1,5 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { BasketItem } from '../models/basketItem.model';
+import { ApiUrls } from '../shared/ApiUrls';
 
 @Component({
   selector: 'app-fetch-basket',

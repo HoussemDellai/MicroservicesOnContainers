@@ -1,4 +1,4 @@
-export interface BasketItem {
+export class BasketItem {
   id: number;
   productId: number;
   name: string;
