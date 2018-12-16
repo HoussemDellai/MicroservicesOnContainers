@@ -13,7 +13,7 @@ export class FetchBasketComponent {
 
   private basketUrl = ApiUrls.basketApiUrl; // "https://localhost:5101/";
 
-  constructor(http: HttpClient) {
+  constructor(private http: HttpClient) {
 
     http.get<BasketItem[]>(this.basketUrl + 'api/BasketItems/')
       .subscribe(result =>
@@ -24,8 +24,11 @@ export class FetchBasketComponent {
       }, error => console.error(error));
   }
 
-  public removeFromBasket() {
+  public removeFromBasket(item: BasketItem)
+  {
+    this.http.delete<BasketItem>(this.basketUrl + 'api/BasketItems/' + item.id)
+      .subscribe(result => {
 
-
+      }, error => console.error(error));
   }
 }
