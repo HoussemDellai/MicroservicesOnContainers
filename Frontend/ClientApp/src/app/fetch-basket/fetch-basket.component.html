@@ -1,0 +1,24 @@
+<h1>Basket items</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+<p *ngIf="!basketItems"><em>Loading...</em></p>
+
+<table class='table' *ngIf="basketItems">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>ProductId</th>
+      <th>Name</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of basketItems">
+      <td>{{ item.id }}</td>
+      <td>{{ item.productId }}</td>
+      <td>{{ item.name }}</td>
+      <td><button (click)="addToBasket()">Add to basket</button></td>
+    </tr>
+  </tbody>
+</table>
