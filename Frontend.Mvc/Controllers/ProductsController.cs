@@ -29,7 +29,7 @@ namespace Frontend.Mvc.Controllers
         public async Task<IActionResult> Index()
         {
             var client = new HttpClient();
-            var json = await client.GetStringAsync("https://localhost:5001/");
+            var json = await client.GetStringAsync("https://localhost:5001/api/Products");
             var products = JsonConvert.DeserializeObject<List<Product>>(json);
             return View(products);
         }
