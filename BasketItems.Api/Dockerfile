@@ -5,16 +5,16 @@ EXPOSE 443
 
 FROM microsoft/dotnet:2.1-sdk AS build
 WORKDIR /src
-COPY ["BasketItems.Api/BasketItems.Api.csproj", "BasketItems.Api/"]
-RUN dotnet restore "BasketItems.Api/BasketItems.Api.csproj"
+COPY ["/Basket.Api.csproj", "Basket.Api/"]
+RUN dotnet restore "Basket.Api/Basket.Api.csproj"
 COPY . .
-WORKDIR "/src/BasketItems.Api"
-RUN dotnet build "BasketItems.Api.csproj" -c Release -o /app
+WORKDIR "/src"
+RUN dotnet build "Basket.Api.csproj" -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "BasketItems.Api.csproj" -c Release -o /app
+RUN dotnet publish "Basket.Api.csproj" -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "BasketItems.Api.dll"]
+ENTRYPOINT ["dotnet", "Basket.Api.dll"]
