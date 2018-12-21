@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frontend", "Frontend\Fronte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basket.Api", "BasketItems.Api\Basket.Api.csproj", "{E23EB1C2-6598-44AC-A627-31A428B73147}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frontend.Mvc", "Frontend.Mvc\Frontend.Mvc.csproj", "{4297305D-ED72-415F-94CE-1727D4338E2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frontend.Mvc", "Frontend.Mvc\Frontend.Mvc.csproj", "{4297305D-ED72-415F-94CE-1727D4338E2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders.Api", "Orders.Api\Orders.Api.csproj", "{6A74C3EA-C4FE-4AB7-88B1-502531CD5B36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{4297305D-ED72-415F-94CE-1727D4338E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4297305D-ED72-415F-94CE-1727D4338E2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4297305D-ED72-415F-94CE-1727D4338E2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A74C3EA-C4FE-4AB7-88B1-502531CD5B36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A74C3EA-C4FE-4AB7-88B1-502531CD5B36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A74C3EA-C4FE-4AB7-88B1-502531CD5B36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A74C3EA-C4FE-4AB7-88B1-502531CD5B36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
