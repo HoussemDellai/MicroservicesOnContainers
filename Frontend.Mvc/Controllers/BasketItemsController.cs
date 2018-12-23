@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Frontend.Mvc;
 using Frontend.Mvc.Models;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace Frontend.Mvc.Controllers
 {
@@ -14,15 +16,39 @@ namespace Frontend.Mvc.Controllers
     {
         private readonly FrontendMvcContext _context;
 
-        public BasketItemsController(FrontendMvcContext context)
+        public BasketItemsController()
         {
-            _context = context;
+            _context = null;
+        }
+        //public BasketItemsController(FrontendMvcContext context)
+        //{
+        //    _context = context;
+        //}
+
+        // GET: BasketItems
+        public async Task<IActionResult> Checkout()
+        {
+            var basketApiUrl = "https://localhost:5101/";
+
+            var client = new HttpClient();
+
+            var response = await client.PostAsync(basketApiUrl + "api/BasketItems/checkout", null);
+
+            return View(response);
         }
 
         // GET: BasketItems
         public async Task<IActionResult> Index()
         {
-            return View(await _context.BasketItem.ToListAsync());
+            var basketApiUrl = "https://localhost:5101/";
+
+            var client = new HttpClient();
+
+            var json = await client.GetStringAsync(basketApiUrl + "api/BasketItems");
+
+            var basketItems = JsonConvert.DeserializeObject<List<BasketItem>>(json);
+
+            return View(basketItems);
         }
 
         // GET: BasketItems/Details/5

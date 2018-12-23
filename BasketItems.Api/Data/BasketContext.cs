@@ -14,6 +14,6 @@ namespace Basket.Api.Models
             Database.EnsureCreated();
         }
 
-        public DbSet<Basket.Api.Models.BasketItem> BasketItem { get; set; }
+        public DbSet<BasketItem> BasketItem { get; set; }
     }
 }

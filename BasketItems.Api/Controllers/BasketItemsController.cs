@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Basket.Api.Models;
+using Orders.Api.Models;
+using Microsoft.Azure.ServiceBus;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace Basket.Api.Controllers
 {
@@ -13,11 +17,60 @@ namespace Basket.Api.Controllers
     [ApiController]
     public class BasketItemsController : ControllerBase
     {
+        string ServiceBusConnectionString = "Endpoint=sb://microservicesoncontainers.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=pydtJlzPcGSoHLuO/YcUi6MDZ/liZRI7BTMiwP4glXA=";
+        string QueueName = "ordersqueue";
+
         private readonly BasketContext _context;
 
         public BasketItemsController(BasketContext context)
         {
             _context = context;
+        }
+
+
+        // POST: api/BasketItems/checkout
+        [Route("checkout")]
+        [HttpPost]
+        public async Task<IActionResult> Checkout()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var order = CreateOrder();
+
+            var orderJson = JsonConvert.SerializeObject(order);
+
+            var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
+
+            var message = new Message
+            {
+                Label = $"New Order at {new DateTimeOffset().LocalDateTime}",
+                Body = Encoding.UTF8.GetBytes(orderJson)
+            };
+
+            await queueClient.SendAsync(message);
+            // _eventBus.Publish(confirmGracePeriodEvent);
+
+            await queueClient.CloseAsync();
+
+            return Ok();
+        }
+
+        private Order CreateOrder()
+        {
+            var basketItems = GetBasketItem();
+
+            var order = new Order();
+
+            foreach (var item in basketItems)
+            {
+                order.ProductsId.Add(item.Id);
+                //order.TotalPrice += item. // TotalPrice could be fetched later by Order API.
+            }
+
+            return order;
         }
 
         // GET: api/BasketItems

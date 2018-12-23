@@ -16,6 +16,6 @@ namespace Orders.Api.Models
         
         public List<int> ProductsId { get; set; }
 
-        public double TotalPrice { get; set; }
+        //public double TotalPrice { get; set; }
     }
 }
