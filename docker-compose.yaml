@@ -1,0 +1,19 @@
+version: "3"
+services:
+  catalog.api:
+    build:
+      context: Catalog.Api
+      dockerfile: Dockerfile
+    container_name: catalog.api
+    image: houssemdocker/catalog.api:v0.1
+    ports:
+      - 6100:80
+    environment: 
+      ConnectionStrings__CatalogContext: Server=catalog.db;Database=CatalogContext;User Id=sa;Password=@Aa123456
+    depends_on:
+      - catalog.db
+  catalog.db:
+    image: microsoft/mssql-server-linux:2017-latest
+    environment:
+      SA_PASSWORD: "@Aa123456"
+      ACCEPT_EULA: "Y"

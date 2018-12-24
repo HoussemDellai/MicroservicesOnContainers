@@ -5,10 +5,10 @@ EXPOSE 443
 
 FROM microsoft/dotnet:2.1-sdk AS build
 WORKDIR /src
-COPY ["Frontend.Mvc/Frontend.Mvc.csproj", "Frontend.Mvc/"]
+COPY ["/Frontend.Mvc.csproj", "Frontend.Mvc/"]
 RUN dotnet restore "Frontend.Mvc/Frontend.Mvc.csproj"
 COPY . .
-WORKDIR "/src/Frontend.Mvc"
+WORKDIR "/src"
 RUN dotnet build "Frontend.Mvc.csproj" -c Release -o /app
 
 FROM build AS publish
