@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basket.Api", "BasketItems.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frontend.Mvc", "Frontend.Mvc\Frontend.Mvc.csproj", "{4297305D-ED72-415F-94CE-1727D4338E2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders.Api", "Orders.Api\Orders.Api.csproj", "{6A74C3EA-C4FE-4AB7-88B1-502531CD5B36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.Api", "Orders.Api\Orders.Api.csproj", "{6A74C3EA-C4FE-4AB7-88B1-502531CD5B36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders.WebJob", "Orders.WebJob\Orders.WebJob.csproj", "{B581958D-69A9-4CFF-8C21-4A27063D3913}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{6A74C3EA-C4FE-4AB7-88B1-502531CD5B36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A74C3EA-C4FE-4AB7-88B1-502531CD5B36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A74C3EA-C4FE-4AB7-88B1-502531CD5B36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B581958D-69A9-4CFF-8C21-4A27063D3913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B581958D-69A9-4CFF-8C21-4A27063D3913}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B581958D-69A9-4CFF-8C21-4A27063D3913}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B581958D-69A9-4CFF-8C21-4A27063D3913}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
