@@ -1,5 +1,17 @@
 version: "3"
 services:
+  frontend.mvc:
+    build:
+      context: Frontend.Mvc
+      dockerfile: Dockerfile
+    container_name: frontend.mvc
+    image: houssemdocker/frontend.mvc:v0.1
+    ports: 
+      - 6100:80
+    depends_on: 
+      - catalog.api
+      - catalog.db
+
   catalog.api:
     build:
       context: Catalog.Api
@@ -7,12 +19,14 @@ services:
     container_name: catalog.api
     image: houssemdocker/catalog.api:v0.1
     ports:
-      - 6100:80
+      - 6200:80
     environment: 
       ConnectionStrings__CatalogContext: Server=catalog.db;Database=CatalogContext;User Id=sa;Password=@Aa123456
     depends_on:
       - catalog.db
+
   catalog.db:
+    container_name: mssql-server-linux
     image: microsoft/mssql-server-linux:2017-latest
     environment:
       SA_PASSWORD: "@Aa123456"
