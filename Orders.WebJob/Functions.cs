@@ -1,9 +1,9 @@
-﻿
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.ServiceBus;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Orders.WebJob.Models;
 
@@ -20,52 +20,19 @@ namespace Orders.WebJob
             _sampleServiceB = sampleServiceB;
         }
 
-        //[Singleton]
-        //public void BlobTrigger(
-        //    [BlobTrigger("test")] string blob, ILogger logger)
-        //{
-        //    _sampleServiceB.DoIt();
-        //    logger.LogInformation("Processed blob: " + blob);
-        //}
-
-        //public void BlobPoisonBlobHandler(
-        //    [QueueTrigger("webjobs-blobtrigger-poison")] JObject blobInfo, ILogger logger)
-        //{
-        //    string container = (string)blobInfo["ContainerName"];
-        //    string blobName = (string)blobInfo["BlobName"];
-
-        //    logger.LogInformation($"Poison blob: {container}/{blobName}");
-        //}
-
-        //[WorkItemValidator]
-        //public void ProcessWorkItem(
-        //    [QueueTrigger("test")] WorkItem workItem, ILogger logger)
-        //{
-        //    _sampleServiceA.DoIt();
-        //    logger.LogInformation($"Processed work item {workItem.ID}");
-        //}
-
         public async Task ProcessWorkItem_ServiceBus([ServiceBusTrigger("ordersqueue", Connection = "ServiceBusConnectionString")]
-            string item,
-            //Order item,
-            //string messageId,
-            //int deliveryCount,
+            string orderJson,
+            string messageId,
+            int deliveryCount,
             ILogger log)
         {
-            //log.LogInformation($"Processing ServiceBus message (Id={messageId}, DeliveryCount={deliveryCount})");
+            log.LogInformation($"Processing ServiceBus message (Id={messageId}, DeliveryCount={deliveryCount}, orderJson={orderJson})");
+
+            var order = JsonConvert.DeserializeObject<Order>(orderJson);
 
             await Task.Delay(1000);
 
-            //log.LogInformation($"Message complete (Id={messageId})");
+            log.LogInformation($"Message complete (Id={messageId}, orderJson={orderJson}, order.ProductsId.Count={order.ProductsId.Count})");
         }
-
-        //public void ProcessEvents([EventHubTrigger("testhub2", Connection = "TestEventHubConnection")] EventData[] events,
-        //    ILogger log)
-        //{
-        //    foreach (var evt in events)
-        //    {
-        //        log.LogInformation($"Event processed (Offset={evt.SystemProperties.Offset}, SequenceNumber={evt.SystemProperties.SequenceNumber})");
-        //    }
-        //}
     }
 }

@@ -54,3 +54,14 @@ services:
     environment:
       SA_PASSWORD: "@Aa123456"
       ACCEPT_EULA: "Y"
+
+  orders.webjob:
+    build:
+      context: Orders.WebJob
+      dockerfile: Dockerfile
+    container_name: orders.webjob
+    image: houssemdocker/orders.webjob:v0.1
+    ports:
+      - 6400:80
+    environment: 
+      ConnectionStrings__ServiceBusConnectionString: Endpoint=sb://microservicesoncontainers.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=pydtJlzPcGSoHLuO/YcUi6MDZ/liZRI7BTMiwP4glXA=
