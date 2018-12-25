@@ -10,6 +10,7 @@ services:
       - 6100:80
     environment: 
       CatalogApiUrl: http://catalog.api
+      BasketApiUrl: http://basket.api
     depends_on: 
       - catalog.api
       - catalog.db

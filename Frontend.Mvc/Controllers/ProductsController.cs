@@ -33,7 +33,7 @@ namespace Frontend.Mvc.Controllers
         public async Task<IActionResult> Index()
         {
             var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
-       
+
             var client = new HttpClient();
 
             var json = await client.GetStringAsync(catalogApiUrl + "/api/Products");
@@ -78,7 +78,7 @@ namespace Frontend.Mvc.Controllers
                 return View(product);
 
             var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
-         
+
             var client = new HttpClient();
 
             var productJson = JsonConvert.SerializeObject(product);
@@ -89,7 +89,61 @@ namespace Frontend.Mvc.Controllers
 
             var response = await client.PostAsync(catalogApiUrl + "/api/Products", content);
 
-            if (!response.IsSuccessStatusCode) 
+            if (!response.IsSuccessStatusCode)
+                return View(product);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Products/AddToBasket/5
+        public async Task<IActionResult> AddToBasket(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
+
+            var client = new HttpClient();
+
+            var json = await client.GetStringAsync(catalogApiUrl + "/api/Products/" + id);
+
+            var product = JsonConvert.DeserializeObject<Product>(json);
+
+            return View(product);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToBasket(int id, [Bind("Id,Name,Price")] Product product)
+        {
+            if (id != product.Id)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+                return View(product);
+
+            var catalogApiUrl = _configuration.GetValue<string>("BasketApiUrl");
+
+            var client = new HttpClient();
+
+            var basketItem = new BasketItem
+            {
+                ProductId = product.Id,
+                Name = product.Name
+            };
+
+            var basketItemJson = JsonConvert.SerializeObject(basketItem);
+
+            HttpContent content = new StringContent(basketItemJson);
+
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            var response = await client.PostAsync(catalogApiUrl + "/api/BasketItems", content);
+
+            if (!response.IsSuccessStatusCode)
                 return View(product);
 
             return RedirectToAction(nameof(Index));

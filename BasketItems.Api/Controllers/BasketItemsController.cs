@@ -31,14 +31,14 @@ namespace Basket.Api.Controllers
         // POST: api/BasketItems/checkout
         [Route("checkout")]
         [HttpPost]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout([FromBody] List<BasketItem> basketItems)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var order = CreateOrder();
+            var order = CreateOrder(basketItems);
 
             var orderJson = JsonConvert.SerializeObject(order);
 
@@ -58,11 +58,9 @@ namespace Basket.Api.Controllers
             return Ok();
         }
 
-        private Order CreateOrder()
+        private Order CreateOrder(List<BasketItem> basketItems)
         {
-            var basketItems = GetBasketItem();
-
-            var order = new Order();
+           var order = new Order();
 
             foreach (var item in basketItems)
             {

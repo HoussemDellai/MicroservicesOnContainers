@@ -9,42 +9,51 @@ using Frontend.Mvc;
 using Frontend.Mvc.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
+using System.Net.Http.Headers;
 
 namespace Frontend.Mvc.Controllers
 {
     public class BasketItemsController : Controller
     {
+        IConfiguration _configuration;
         private readonly FrontendMvcContext _context;
 
-        public BasketItemsController()
+        public BasketItemsController(IConfiguration configuration)
         {
+            _configuration = configuration;
             _context = null;
         }
-        //public BasketItemsController(FrontendMvcContext context)
-        //{
-        //    _context = context;
-        //}
 
         // GET: BasketItems
         public async Task<IActionResult> Checkout()
         {
-            var basketApiUrl = "https://localhost:5101/";
+            var basketApiUrl = _configuration.GetValue<string>("BasketApiUrl");
 
             var client = new HttpClient();
 
-            var response = await client.PostAsync(basketApiUrl + "api/BasketItems/checkout", null);
+            var json = await client.GetStringAsync(basketApiUrl + "/api/BasketItems");
 
-            return View(response);
+            HttpContent content = new StringContent(json);
+
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            var response = await client.PostAsync(basketApiUrl + "/api/BasketItems/checkout", content);
+
+            if (!response.IsSuccessStatusCode)
+                return BadRequest();
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: BasketItems
         public async Task<IActionResult> Index()
         {
-            var basketApiUrl = "https://localhost:5101/";
+            var basketApiUrl = _configuration.GetValue<string>("BasketApiUrl");
 
             var client = new HttpClient();
 
-            var json = await client.GetStringAsync(basketApiUrl + "api/BasketItems");
+            var json = await client.GetStringAsync(basketApiUrl + "/api/BasketItems");
 
             var basketItems = JsonConvert.DeserializeObject<List<BasketItem>>(json);
 
