@@ -8,16 +8,20 @@ using Microsoft.EntityFrameworkCore;
 using Frontend.Mvc;
 using Frontend.Mvc.Models;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace Frontend.Mvc.Controllers
 {
     public class ProductsController : Controller
     {
+        private IConfiguration _configuration;
         private readonly FrontendMvcContext _context;
 
-        public ProductsController()
+        public ProductsController(IConfiguration configuration)
         {
+            _configuration = configuration;
             _context = null;
         }
         //public ProductsController(FrontendMvcContext context)
@@ -28,9 +32,14 @@ namespace Frontend.Mvc.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
+            var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
+       
             var client = new HttpClient();
-            var json = await client.GetStringAsync("https://localhost:5201/api/Products");
+
+            var json = await client.GetStringAsync(catalogApiUrl + "/api/Products");
+
             var products = JsonConvert.DeserializeObject<List<Product>>(json);
+
             return View(products);
         }
 
@@ -61,17 +70,29 @@ namespace Frontend.Mvc.Controllers
         // POST: Products/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[ValidateAntiForgeryToken]
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Price")] Product product)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(product);
+            if (!ModelState.IsValid)
+                return View(product);
+
+            var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
+         
+            var client = new HttpClient();
+
+            var productJson = JsonConvert.SerializeObject(product);
+
+            HttpContent content = new StringContent(productJson);
+
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            var response = await client.PostAsync(catalogApiUrl + "/api/Products", content);
+
+            if (!response.IsSuccessStatusCode) 
+                return View(product);
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Products/Edit/5

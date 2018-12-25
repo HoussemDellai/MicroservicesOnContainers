@@ -8,6 +8,8 @@ services:
     image: houssemdocker/frontend.mvc:v0.1
     ports: 
       - 6100:80
+    environment: 
+      CatalogApiUrl: http://catalog.api
     depends_on: 
       - catalog.api
       - catalog.db
@@ -26,7 +28,27 @@ services:
       - catalog.db
 
   catalog.db:
-    container_name: mssql-server-linux
+    container_name: mssql-server-linux.catalog.db
+    image: microsoft/mssql-server-linux:2017-latest
+    environment:
+      SA_PASSWORD: "@Aa123456"
+      ACCEPT_EULA: "Y"
+
+  basket.api:
+    build:
+      context: BasketItems.Api
+      dockerfile: Dockerfile
+    container_name: basket.api
+    image: houssemdocker/basket.api:v0.1
+    ports:
+      - 6300:80
+    environment: 
+      ConnectionStrings__BasketContext: Server=basket.db;Database=BasketContext;User Id=sa;Password=@Aa123456
+    depends_on:
+      - basket.db
+
+  basket.db:
+    container_name: mssql-server-linux.basket.db
     image: microsoft/mssql-server-linux:2017-latest
     environment:
       SA_PASSWORD: "@Aa123456"
