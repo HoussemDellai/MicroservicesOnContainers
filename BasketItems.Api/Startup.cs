@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Basket.Api.Models;
+using HealthChecks;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Basket.Api
@@ -33,6 +34,12 @@ namespace Basket.Api
             {
                 c.SwaggerDoc("v1", new Info { Title = "Basket API", Version = "v1" });
             });
+
+
+            //TODO: use DI
+            services.AddHealthChecks()
+                .AddCheck("SQL",
+                    new SqlConnectionHealthCheck(Configuration.GetConnectionString("CatalogContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +58,8 @@ namespace Basket.Api
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Basket API V1");
             });
+
+            app.UseHealthChecks("/healthz");
 
             if (env.IsDevelopment())
             {

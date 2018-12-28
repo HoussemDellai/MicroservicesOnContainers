@@ -39,6 +39,7 @@ namespace Catalog.Api
                 c.SwaggerDoc("v1", new Info { Title = "Catalog API", Version = "v1" });
             });
 
+            //TODO: use DI
             services.AddHealthChecks()
                 .AddCheck("SQL", 
                     new SqlConnectionHealthCheck(Configuration.GetConnectionString("CatalogContext")));

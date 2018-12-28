@@ -25,7 +25,7 @@ namespace HealthChecks
             }
             catch (SqlException e)
             {
-                return HealthCheckResult.Unhealthy("Exception", e);
+                return HealthCheckResult.Unhealthy(context.Registration.FailureStatus.ToString(), e);
             }
 
             return HealthCheckResult.Healthy();
