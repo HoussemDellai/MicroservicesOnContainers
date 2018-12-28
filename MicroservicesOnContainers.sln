@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frontend.Mvc", "Frontend.Mv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.Api", "Orders.Api\Orders.Api.csproj", "{6A74C3EA-C4FE-4AB7-88B1-502531CD5B36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders.WebJob", "Orders.WebJob\Orders.WebJob.csproj", "{B581958D-69A9-4CFF-8C21-4A27063D3913}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.WebJob", "Orders.WebJob\Orders.WebJob.csproj", "{B581958D-69A9-4CFF-8C21-4A27063D3913}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
