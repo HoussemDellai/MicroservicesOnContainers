@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Data.SqlClient;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Catalog.Api.Models;
+using HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Catalog.Api
@@ -33,6 +38,10 @@ namespace Catalog.Api
             {
                 c.SwaggerDoc("v1", new Info { Title = "Catalog API", Version = "v1" });
             });
+
+            services.AddHealthChecks()
+                .AddCheck("SQL", 
+                    new SqlConnectionHealthCheck(Configuration.GetConnectionString("CatalogContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +61,7 @@ namespace Catalog.Api
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Catalog API V1");
             });
 
+            app.UseHealthChecks("/healthz");
 
             if (env.IsDevelopment())
             {
@@ -66,4 +76,4 @@ namespace Catalog.Api
             app.UseMvc();
         }
     }
-}
+}   
