@@ -1,0 +1,27 @@
+FROM microsoft/dotnet:2.2-aspnetcore-runtime AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+FROM microsoft/dotnet:2.2-sdk AS build
+WORKDIR /src
+
+COPY ["/HealthChecks/HealthChecks.csproj", "HealthChecks/"]
+RUN dotnet restore "HealthChecks/HealthChecks.csproj"
+COPY ["/HealthChecks", "HealthChecks/"]
+RUN dotnet build "HealthChecks/HealthChecks.csproj" -c Release
+
+COPY ["/Catalog.Api/Catalog.Api.csproj", "/Catalog.Api"]
+RUN dotnet restore "Catalog.Api/Catalog.Api.csproj"
+
+COPY ["/Catalog.Api", "/Catalog.Api"]
+#WORKDIR "/src"
+RUN dotnet build "Catalog.Api/Catalog.Api.csproj" -c Release -o /app
+
+FROM build AS publish
+RUN dotnet publish "Catalog.Api/Catalog.Api.csproj" -c Release -o /app
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
+ENTRYPOINT ["dotnet", "Catalog.Api.dll"]

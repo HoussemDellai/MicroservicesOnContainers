@@ -5,6 +5,10 @@ EXPOSE 443
 
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src
+
+COPY ["../HealthChecks/HealthChecks.csproj", "HealthChecks/"]
+RUN dotnet restore "HealthChecks/HealthChecks.csproj"
+
 COPY ["/Catalog.Api.csproj", "Catalog.Api/"]
 RUN dotnet restore "Catalog.Api/Catalog.Api.csproj"
 COPY . .
