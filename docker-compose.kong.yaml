@@ -39,6 +39,10 @@ services:
       - "8443:8443/tcp"
       - "8444:8444/tcp"
     restart: on-failure
+    # Added the following command due to a migration failure:
+    # https://github.com/Kong/docker-kong/issues/162
+    command: >
+      sh -c "kong migrations up && sh /docker-entrypoint.sh kong docker-start"
   db:
     image: postgres:9.5
     environment:
