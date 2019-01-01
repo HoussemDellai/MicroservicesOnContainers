@@ -1,0 +1,240 @@
+# Frontend MVC deployment 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-mvc-deployment
+spec:
+  selector:
+    matchLabels:
+      app: frontend-mvc
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frontend-mvc
+    spec:
+      containers:
+      - name: frontend-mvc
+        image: houssemdocker/frontend.mvc:v0.1
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "1"
+            memory: "200Mi"
+          requests:
+            cpu: "0.1"
+            memory: "100Mi"
+        env:
+          - name: CatalogApiUrl
+            value: http://catalog-api-service
+          - name: BasketApiUrl
+            value: http://basket-api-service
+---
+# Frontend MVC service
+kind: Service
+apiVersion: v1
+metadata:
+  name: frontend-mvc-service
+spec:
+  selector:
+    app: frontend-mvc
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+---
+# Catalog API deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-api-deployment
+spec:
+  selector:
+    matchLabels:
+      app: catalog-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: catalog-api
+    spec:
+      containers:
+      - name: catalog-api
+        image: houssemdocker/catalog.api:v0.1
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "1"
+            memory: "200Mi"
+          requests:
+            cpu: "0.1"
+            memory: "100Mi"
+        env:
+          - name: ConnectionStrings__CatalogContext
+            value: "Server=catalog-mssql-service;Database=CatalogContext;User Id=sa;Password=@Aa123456"
+---
+# Catalog API sevice
+kind: Service
+apiVersion: v1
+metadata:
+  name: catalog-api-service
+spec:
+  selector:
+    app: catalog-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+---
+# Catalog MSSQL database deployment
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: catalog-mssql-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: catalog-mssql
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: catalog-mssql
+        image: microsoft/mssql-server-linux
+        resources:
+          limits:
+            cpu: "2"
+            memory: "2Gi"
+          requests:
+            cpu: "0.5"
+        ports:
+        - containerPort: 1433
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          value: "@Aa123456"
+      #   volumeMounts:
+      #   - name: mssql-persistent-storage
+      #     mountPath: /var/opt/mssql
+      # volumes:
+      # - name: mssql-persistent-storage
+      #   persistentVolumeClaim:
+      #     claimName: mssql-pv-claim
+---
+# Catalog MSSQL database service
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-mssql-service
+spec:
+  selector:
+    app: catalog-mssql
+  ports:
+    - protocol: TCP
+      port: 1433
+      targetPort: 1433
+      nodePort: 30200
+  type: NodePort
+---
+# Basket API deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: basket-api-deployment
+spec:
+  selector:
+    matchLabels:
+      app: basket-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: basket-api
+    spec:
+      containers:
+      - name: basket-api
+        image: houssemdocker/basket.api:v0.1
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "1"
+            memory: "200Mi"
+          requests:
+            cpu: "0.1"
+            memory: "100Mi"
+        env:
+          - name: ConnectionStrings__BasketContext
+            value: "Server=basket-mssql-service;Database=CatalogContext;User Id=sa;Password=@Aa123456"
+---
+# Basket API service
+kind: Service
+apiVersion: v1
+metadata:
+  name: basket-api-service
+spec:
+  selector:
+    app: basket-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+---
+# Basket MSSQL database deployment
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: basket-mssql-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: basket-mssql
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: basket-mssql
+        image: microsoft/mssql-server-linux
+        resources:
+          limits:
+            cpu: "2"
+            memory: "2Gi"
+          requests:
+            cpu: "0.5"
+        ports:
+        - containerPort: 1433
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          value: "@Aa123456"
+      #   volumeMounts:
+      #   - name: mssql-persistent-storage
+      #     mountPath: /var/opt/mssql
+      # volumes:
+      # - name: mssql-persistent-storage
+      #   persistentVolumeClaim:
+      #     claimName: mssql-pv-claim
+---
+# Basket MSSQL database service
+apiVersion: v1
+kind: Service
+metadata:
+  name: basket-mssql-service
+spec:
+  selector:
+    app: basket-mssql
+  ports:
+    - protocol: TCP
+      port: 1433
+      targetPort: 1433
+      nodePort: 30300
+  type: NodePort
