@@ -17,8 +17,8 @@ services:
 
   catalog.api:
     build:
-      context: Catalog.Api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Catalog.Api.Dockerfile
     container_name: catalog.api
     image: houssemdocker/catalog.api:v0.1
     ports:
@@ -37,8 +37,8 @@ services:
 
   basket.api:
     build:
-      context: BasketItems.Api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Basket.Api.Dockerfile
     container_name: basket.api
     image: houssemdocker/basket.api:v0.1
     ports:
