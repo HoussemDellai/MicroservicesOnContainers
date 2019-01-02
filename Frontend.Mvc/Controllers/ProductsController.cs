@@ -29,16 +29,34 @@ namespace Frontend.Mvc.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
-
+            var catalogApiUrl = _configuration.GetValue<string>("ApiGatewayUrl");
+            catalogApiUrl = "http://104.45.20.246";
             var client = new HttpClient();
 
-            var json = await client.GetStringAsync(catalogApiUrl + "/api/Products");
+            var request = new HttpRequestMessage(HttpMethod.Get, catalogApiUrl);
+
+            request.Headers.Add("Host", "mvc-client-catalog");
+            
+            var response = await client.SendAsync(request);
+
+            var json = await response.Content.ReadAsStringAsync();
 
             var products = JsonConvert.DeserializeObject<List<Product>>(json);
 
             return View(products);
         }
+        // public async Task<IActionResult> Index()
+        // {
+        //     var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
+
+        //     var client = new HttpClient();
+
+        //     var json = await client.GetStringAsync(catalogApiUrl + "/api/Products");
+
+        //     var products = JsonConvert.DeserializeObject<List<Product>>(json);
+
+        //     return View(products);
+        // }
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
