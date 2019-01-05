@@ -9,6 +9,7 @@ using Orders.Api.Models;
 using Microsoft.Azure.ServiceBus;
 using System.Text;
 using Newtonsoft.Json;
+using RabbitMQ.Client;
 
 namespace Basket.Api.Controllers
 {
@@ -21,17 +22,21 @@ namespace Basket.Api.Controllers
 
         private readonly BasketContext _context;
 
-        public BasketItemsController(BasketContext context)
+        public BasketItemsController()
         {
-            _context = context;
         }
-
+        // public BasketItemsController(BasketContext context)
+        // {
+        //     _context = context;
+        // }
 
         // POST: api/BasketItems/checkout
         [Route("checkout")]
         [HttpPost]
         public async Task<IActionResult> Checkout([FromBody] List<BasketItem> basketItems)
         {
+            Console.WriteLine("Started Checkout ...");
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -39,6 +44,52 @@ namespace Basket.Api.Controllers
 
             var order = CreateOrder(basketItems);
 
+            await PublishOrderUsingRabbitMq(order);
+
+            //await PublishOrderUsingAzureServiceBus(order);
+
+            return Ok();
+        }
+
+        private async Task PublishOrderUsingRabbitMq(Order order)
+        {
+            Console.WriteLine("Started PublishOrderUsingRabbitMq");
+            var factory = new ConnectionFactory() 
+            { 
+                // HostName = "localhost", //"my-rabbit",//"192.168.43.79",//"6d608a2612f8",//
+                // UserName = "guest",
+                // Password = "guest",
+                // //VirtualHost = "/",
+                // Port = 5671
+            };
+            
+            factory.Uri = new Uri("amqp://guest:guest@localhost:5672/console-test");
+ 
+            //factory.Uri = "amqp://user:pass@hostName:port/vhost";
+
+            using(var connection = factory.CreateConnection())
+            using(var channel = connection.CreateModel())
+            {
+                Console.WriteLine(" started queue... ");
+                channel.QueueDeclare(queue: "hello",
+                                     durable: true,
+                                     exclusive: false,
+                                     autoDelete: false,
+                                     arguments: null);
+
+                string message = "Hello World!";
+                var body = Encoding.UTF8.GetBytes(message);
+
+                channel.BasicPublish(exchange: "",
+                                     routingKey: "hello",
+                                     basicProperties: null,
+                                     body: body);
+                Console.WriteLine(" [x] Sent {0}", message);
+            }
+        }
+
+        private async Task PublishOrderUsingAzureServiceBus(Order order)
+        {
             var orderJson = JsonConvert.SerializeObject(order);
 
             var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
@@ -54,7 +105,6 @@ namespace Basket.Api.Controllers
 
             await queueClient.CloseAsync();
 
-            return Ok();
         }
 
         private Order CreateOrder(List<BasketItem> basketItems)
