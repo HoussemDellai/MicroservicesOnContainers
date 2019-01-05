@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend-mvc
-        image: houssemdocker/frontend.mvc:0.1
+        image: houssemdocker/frontend-mvc:0.1
         ports:
         - containerPort: 80
         resources:
@@ -64,7 +64,7 @@ spec:
     spec:
       containers:
       - name: catalog-api
-        image: houssemdocker/catalog.api:0.1
+        image: houssemdocker/catalog-api:0.1
         ports:
         - containerPort: 80
         resources:
@@ -161,7 +161,7 @@ spec:
     spec:
       containers:
       - name: basket-api
-        image: houssemdocker/basket.api:0.1
+        image: houssemdocker/basket-api:0.1
         ports:
         - containerPort: 80
         resources:
