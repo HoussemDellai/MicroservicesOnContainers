@@ -47,15 +47,27 @@ namespace Orders.WebJob
                 .UseConsoleLifetime();
                 
             var confbuilder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            .AddEnvironmentVariables();
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                //.AddEnvironmentVariables();
 
             IConfigurationRoot configuration = confbuilder.Build();
+
+            foreach(var env in configuration.GetChildren())
+            {
+                Console.WriteLine($"{env.Key}::{env.Value}");
+            }
 
             var rabbitMqUri = configuration.GetValue<string>("RabbitMqUri");
 
             Console.WriteLine("RabbitMqUri : " + rabbitMqUri);
+
+            // // get all
+            // var enumerator = Environment.GetEnvironmentVariables().GetEnumerator();
+            // while (enumerator.MoveNext())
+            // {
+            //     Console.WriteLine($"{enumerator.Key}:{enumerator.Value}");
+            // } 
 
             SubscriberRabbitMq subscriber = new SubscriberRabbitMq(configuration);
             subscriber.SubscribeAndProcessOrdersFromRabbitMq();

@@ -175,7 +175,7 @@ spec:
           - name: ConnectionStrings__BasketContext
             value: "Server=basket-mssql-service;Database=CatalogContext;User Id=sa;Password=@Aa123456"
           - name: RabbitMqUri
-            value: "amqp://guest:guest@rabbitmq-service//" # "/" is the name of the virtual host in RabbitMQ
+            value: amqp://guest:guest@rabbitmq-service//
 ---
 # Basket API service
 kind: Service
@@ -276,8 +276,8 @@ spec:
   - protocol: TCP
     port: 30672
     targetPort: 5672
-    nodePort: 30672
-  type: NodePort
+    #nodePort: 30672
+  type: ClusterIP
 ---
 # RabbitMQ Management sevice
 kind: Service
@@ -315,7 +315,7 @@ spec:
         - containerPort: 80
         env:
           - name: RabbitMqUri
-            value: "amqp://guest:guest@rabbitmq-service//" # "/" is the name of the virtual host in RabbitMQ          
+            value: amqp://guest:guest@rabbitmq-service//
 ---
 # Orders WebJob sevice
 kind: Service
