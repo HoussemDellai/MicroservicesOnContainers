@@ -5,7 +5,7 @@ services:
       context: Frontend.Mvc
       dockerfile: Dockerfile
     container_name: frontend.mvc
-    image: houssemdocker/frontend.mvc:v0.1
+    image: houssemdocker/frontend.mvc:${TAG:-0.1}
     ports: 
       - 6100:80
     environment: 
@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: Catalog.Api.Dockerfile
     container_name: catalog.api
-    image: houssemdocker/catalog.api:v0.1
+    image: houssemdocker/catalog.api:${TAG:-0.1}
     ports:
       - 6200:80
     environment: 
@@ -40,7 +40,7 @@ services:
       context: .
       dockerfile: Basket.Api.Dockerfile
     container_name: basket.api
-    image: houssemdocker/basket.api:v0.1
+    image: houssemdocker/basket.api:${TAG:-0.1}
     ports:
       - 6300:80
     environment: 
@@ -57,11 +57,12 @@ services:
 
   orders.webjob:
     build:
-      context: Orders.WebJob
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Orders.WebJob.Dockerfile
     container_name: orders.webjob
-    image: houssemdocker/orders.webjob:v0.1
+    image: houssemdocker/orders.webjob:${TAG:-0.1}
     ports:
       - 6400:80
     environment: 
+      RabbitMqUri: "amqp://guest:guest@localhost:5672//" # "/" is the name of the virtual host in RabbitMQ
       ConnectionStrings__ServiceBusConnectionString: Endpoint=sb://microservicesoncontainers.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=pydtJlzPcGSoHLuO/YcUi6MDZ/liZRI7BTMiwP4glXA=

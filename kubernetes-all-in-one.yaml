@@ -175,7 +175,7 @@ spec:
           - name: ConnectionStrings__BasketContext
             value: "Server=basket-mssql-service;Database=CatalogContext;User Id=sa;Password=@Aa123456"
           - name: RabbitMqUri
-            value: "amqp://guest:guest@localhost:5672//"
+            value: "amqp://guest:guest@localhost:5672//" # "/" is the name of the virtual host in RabbitMQ
 ---
 # Basket API service
 kind: Service
