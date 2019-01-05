@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: Catalog.Api.Dockerfile
     container_name: catalog.api
-    image: houssemdocker/catalog.api:${TAG:-0.1}
+    image: houssemdocker/catalog-api:${TAG:-0.1}
     ports:
       - 6200:80
     environment: 
@@ -40,7 +40,7 @@ services:
       context: .
       dockerfile: Basket.Api.Dockerfile
     container_name: basket.api
-    image: houssemdocker/basket.api:${TAG:-0.1}
+    image: houssemdocker/basket-api:${TAG:-0.1}
     ports:
       - 6300:80
     environment: 
