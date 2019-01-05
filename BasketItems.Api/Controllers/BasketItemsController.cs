@@ -10,6 +10,7 @@ using Microsoft.Azure.ServiceBus;
 using System.Text;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
+using Microsoft.Extensions.Configuration;
 
 namespace Basket.Api.Controllers
 {
@@ -21,9 +22,11 @@ namespace Basket.Api.Controllers
         string QueueName = "ordersqueue";
 
         private readonly BasketContext _context;
+        private readonly IConfiguration _configuration;
 
-        public BasketItemsController()
+        public BasketItemsController(IConfiguration configuration)
         {
+            _configuration = configuration;
         }
         // public BasketItemsController(BasketContext context)
         // {
@@ -54,37 +57,31 @@ namespace Basket.Api.Controllers
         private async Task PublishOrderUsingRabbitMq(Order order)
         {
             Console.WriteLine("Started PublishOrderUsingRabbitMq");
-            var factory = new ConnectionFactory() 
-            { 
-                // HostName = "localhost", //"my-rabbit",//"192.168.43.79",//"6d608a2612f8",//
-                // UserName = "guest",
-                // Password = "guest",
-                // //VirtualHost = "/",
-                // Port = 5671
-            };
+            var factory = new ConnectionFactory();
             
-            factory.Uri = new Uri("amqp://guest:guest@localhost:5672/console-test");
- 
+            var rabbitMqUri = _configuration.GetValue<string>("RabbitMqUri");
+
+            factory.Uri = new Uri(rabbitMqUri);
             //factory.Uri = "amqp://user:pass@hostName:port/vhost";
 
             using(var connection = factory.CreateConnection())
             using(var channel = connection.CreateModel())
             {
                 Console.WriteLine(" started queue... ");
-                channel.QueueDeclare(queue: "hello",
+                channel.QueueDeclare(queue: "orders",
                                      durable: true,
                                      exclusive: false,
                                      autoDelete: false,
                                      arguments: null);
 
-                string message = "Hello World!";
+                string message = JsonConvert.SerializeObject(order);
                 var body = Encoding.UTF8.GetBytes(message);
 
                 channel.BasicPublish(exchange: "",
-                                     routingKey: "hello",
+                                     routingKey: "orders",
                                      basicProperties: null,
                                      body: body);
-                Console.WriteLine(" [x] Sent {0}", message);
+                Console.WriteLine("Message sent : {0}", message);
             }
         }
 

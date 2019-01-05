@@ -174,6 +174,8 @@ spec:
         env:
           - name: ConnectionStrings__BasketContext
             value: "Server=basket-mssql-service;Database=CatalogContext;User Id=sa;Password=@Aa123456"
+          - name: RabbitMqUri
+            value: "amqp://guest:guest@localhost:5672//"
 ---
 # Basket API service
 kind: Service
@@ -239,4 +241,40 @@ spec:
       port: 1433
       targetPort: 1433
       nodePort: 30300
+  type: NodePort
+---
+# RabbitMQ deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management
+        ports:
+        - containerPort: 5672
+---
+# RabbitMQ sevice
+kind: Service
+apiVersion: v1
+metadata:
+  name: rabbitmq-service
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+  - protocol: TCP
+    port: 5672
+    targetPort: 5672
+    nodePort: 5672
   type: NodePort

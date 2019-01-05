@@ -3,6 +3,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
+using System;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System.Text;
 
 namespace Orders.WebJob
 {
@@ -33,13 +37,6 @@ namespace Orders.WebJob
                 {
                     b.SetMinimumLevel(LogLevel.Debug);
                     b.AddConsole();
-
-                    // If this key exists in any config, use it to enable App Insights
-                    //string appInsightsKey = context.Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"];
-                    //if (!string.IsNullOrEmpty(appInsightsKey))
-                    //{
-                    //    b.AddApplicationInsights(o => o.InstrumentationKey = appInsightsKey);
-                    //}
                 })
                 .ConfigureServices(services =>
                 {
@@ -48,13 +45,23 @@ namespace Orders.WebJob
                     services.AddSingleton<ISampleServiceB, SampleServiceB>();
                 })
                 .UseConsoleLifetime();
+                
+            var confbuilder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            IConfigurationRoot configuration = confbuilder.Build();
+
+            var rabbitMqUri = configuration.GetValue<string>("RabbitMqUri");
+
+            Console.WriteLine("RabbitMqUri : " + rabbitMqUri);
+
+            SubscriberRabbitMq subscriber = new SubscriberRabbitMq(configuration);
+            subscriber.SubscribeAndProcessOrdersFromRabbitMq();
 
             var host = builder.Build();
-            using (host)
-            {
-                host.Run();
-                //await host.RunAsync();
-            }
+
+            host.Run();
         }
     }
 }
