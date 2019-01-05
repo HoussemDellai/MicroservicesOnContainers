@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.Api", "Orders.Api\Or
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.WebJob", "Orders.WebJob\Orders.WebJob.csproj", "{B581958D-69A9-4CFF-8C21-4A27063D3913}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthChecks", "HealthChecks\HealthChecks.csproj", "{84FB07C5-7138-452D-98A2-B1A918C9C4FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthChecks", "HealthChecks\HealthChecks.csproj", "{84FB07C5-7138-452D-98A2-B1A918C9C4FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

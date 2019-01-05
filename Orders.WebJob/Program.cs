@@ -59,17 +59,12 @@ namespace Orders.WebJob
             }
 
             var rabbitMqUri = configuration.GetValue<string>("RabbitMqUri");
+            var rabbitMqUriEnv = Environment.GetEnvironmentVariable("RabbitMqUri");
 
             Console.WriteLine("RabbitMqUri : " + rabbitMqUri);
-
-            // // get all
-            // var enumerator = Environment.GetEnvironmentVariables().GetEnumerator();
-            // while (enumerator.MoveNext())
-            // {
-            //     Console.WriteLine($"{enumerator.Key}:{enumerator.Value}");
-            // } 
-
-            SubscriberRabbitMq subscriber = new SubscriberRabbitMq(configuration);
+            Console.WriteLine("RabbitMqUriEnv : " + rabbitMqUriEnv);
+            
+            var subscriber = new SubscriberRabbitMq(configuration);
             subscriber.SubscribeAndProcessOrdersFromRabbitMq();
 
             var host = builder.Build();
