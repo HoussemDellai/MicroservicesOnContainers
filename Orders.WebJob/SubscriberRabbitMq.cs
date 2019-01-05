@@ -10,21 +10,20 @@ namespace Orders.WebJob
 {
 public class SubscriberRabbitMq
 {
-        private readonly IConfiguration _configuration;
+        private readonly string _rabbitMqUri;
 
-        public SubscriberRabbitMq(IConfiguration configuration)
+        public SubscriberRabbitMq(string rabbitMqUri)
         {
-            _configuration = configuration;
+            _rabbitMqUri = rabbitMqUri;
         }
 
         public void SubscribeAndProcessOrdersFromRabbitMq()
         {
-            var factory = new ConnectionFactory();
+            var factory = new ConnectionFactory
+            {
+                Uri = new Uri(_rabbitMqUri)
+            };
 
-            var rabbitMqUri = _configuration.GetValue<string>("RabbitMqUri");
-
-            factory.Uri = new Uri(rabbitMqUri);
-            
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
             

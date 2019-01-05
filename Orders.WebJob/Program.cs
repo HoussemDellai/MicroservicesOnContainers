@@ -17,59 +17,62 @@ namespace Orders.WebJob
         // AzureWebJobsDashboard and AzureWebJobsStorage
         public static void Main(string[] args)
         {
-            var builder = new HostBuilder()
-                .ConfigureAppConfiguration(b =>
-                {
-                    //// Adding command line as a configuration source
-                    //b.AddCommandLine(args);
-                    b.SetBasePath(Directory.GetCurrentDirectory());
-                    b.AddJsonFile("appsettings.json");
-                })
-                .UseEnvironment("Development")
-                .ConfigureWebJobs(b =>
-                {
-                    b.AddAzureStorageCoreServices()
-                     .AddAzureStorage()
-                     .AddServiceBus();
-                })
-                
-                .ConfigureLogging((context, b) =>
-                {
-                    b.SetMinimumLevel(LogLevel.Debug);
-                    b.AddConsole();
-                })
-                .ConfigureServices(services =>
-                {
-                    // add some sample services to demonstrate job class DI
-                    services.AddSingleton<ISampleServiceA, SampleServiceA>();
-                    services.AddSingleton<ISampleServiceB, SampleServiceB>();
-                })
-                .UseConsoleLifetime();
-                
-            var confbuilder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-                //.AddEnvironmentVariables();
+            //var builder = new HostBuilder()
+            //    .ConfigureAppConfiguration(b =>
+            //    {
+            //        //// Adding command line as a configuration source
+            //        //b.AddCommandLine(args);
+            //        b.SetBasePath(Directory.GetCurrentDirectory());
+            //        b.AddJsonFile("appsettings.json");
+            //    })
+            //    .UseEnvironment("Development")
+            //    .ConfigureWebJobs(b =>
+            //    {
+            //        b.AddAzureStorageCoreServices()
+            //         .AddAzureStorage()
+            //         .AddServiceBus();
+            //    })
 
-            IConfigurationRoot configuration = confbuilder.Build();
+            //    .ConfigureLogging((context, b) =>
+            //    {
+            //        b.SetMinimumLevel(LogLevel.Debug);
+            //        b.AddConsole();
+            //    })
+            //    .ConfigureServices(services =>
+            //    {
+            //        // add some sample services to demonstrate job class DI
+            //        services.AddSingleton<ISampleServiceA, SampleServiceA>();
+            //        services.AddSingleton<ISampleServiceB, SampleServiceB>();
+            //    })
+            //    .UseConsoleLifetime();
 
-            foreach(var env in configuration.GetChildren())
-            {
-                Console.WriteLine($"{env.Key}::{env.Value}");
-            }
+            //var confbuilder = new ConfigurationBuilder()
+            //    .SetBasePath(Directory.GetCurrentDirectory())
+            //    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            //    //.AddEnvironmentVariables();
 
-            var rabbitMqUri = configuration.GetValue<string>("RabbitMqUri");
+            //IConfigurationRoot configuration = confbuilder.Build();
+
+            //foreach(var env in configuration.GetChildren())
+            //{
+            //    Console.WriteLine($"{env.Key}::{env.Value}");
+            //}
+
+            //var rabbitMqUri = configuration.GetValue<string>("RabbitMqUri");
             var rabbitMqUriEnv = Environment.GetEnvironmentVariable("RabbitMqUri");
-
-            Console.WriteLine("RabbitMqUri : " + rabbitMqUri);
+            if (string.IsNullOrEmpty(rabbitMqUriEnv))
+            {
+                rabbitMqUriEnv = "amqp://guest:guest@localhost:5672//";
+            }
+            //Console.WriteLine("RabbitMqUri : " + rabbitMqUri);
             Console.WriteLine("RabbitMqUriEnv : " + rabbitMqUriEnv);
-            
-            var subscriber = new SubscriberRabbitMq(configuration);
+
+            var subscriber = new SubscriberRabbitMq(rabbitMqUriEnv);
             subscriber.SubscribeAndProcessOrdersFromRabbitMq();
 
-            var host = builder.Build();
+            //var host = builder.Build();
 
-            host.Run();
+            //host.Run();
         }
     }
 }
