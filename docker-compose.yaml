@@ -5,7 +5,7 @@ services:
       context: Frontend.Mvc
       dockerfile: Dockerfile
     container_name: frontend.mvc
-    image: houssemdocker/frontend.mvc:${TAG:-0.1}
+    image: houssemdocker/frontend-mvc:${TAG:-0.1}
     ports: 
       - 6100:80
     environment: 
