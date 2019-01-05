@@ -60,7 +60,7 @@ services:
       context: .
       dockerfile: Orders.WebJob.Dockerfile
     container_name: orders.webjob
-    image: houssemdocker/orders.webjob:${TAG:-0.1}
+    image: houssemdocker/orders-webjob:${TAG:-0.1}
     ports:
       - 6400:80
     environment: 

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend-mvc
-        image: houssemdocker/frontend.mvc:v0.1
+        image: houssemdocker/frontend.mvc:0.1
         ports:
         - containerPort: 80
         resources:
@@ -64,7 +64,7 @@ spec:
     spec:
       containers:
       - name: catalog-api
-        image: houssemdocker/catalog.api:v0.1
+        image: houssemdocker/catalog.api:0.1
         ports:
         - containerPort: 80
         resources:
@@ -161,7 +161,7 @@ spec:
     spec:
       containers:
       - name: basket-api
-        image: houssemdocker/basket.api:v0.1
+        image: houssemdocker/basket.api:0.1
         ports:
         - containerPort: 80
         resources:
@@ -175,7 +175,7 @@ spec:
           - name: ConnectionStrings__BasketContext
             value: "Server=basket-mssql-service;Database=CatalogContext;User Id=sa;Password=@Aa123456"
           - name: RabbitMqUri
-            value: "amqp://guest:guest@localhost:5672//" # "/" is the name of the virtual host in RabbitMQ
+            value: "amqp://guest:guest@rabbitmq-service//" # "/" is the name of the virtual host in RabbitMQ
 ---
 # Basket API service
 kind: Service
@@ -276,5 +276,65 @@ spec:
   - protocol: TCP
     port: 5672
     targetPort: 5672
-    nodePort: 5672
+    nodePort: 30672
+  type: NodePort
+---
+# RabbitMQ Management sevice
+kind: Service
+apiVersion: v1
+metadata:
+  name: rabbitmq-management-service
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+  - protocol: TCP
+    port: 15672
+    targetPort: 15672
+  type: LoadBalancer
+---
+# Orders WebJob deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-webjob-deployment
+spec:
+  selector:
+    matchLabels:
+      app: orders-webjob
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: orders-webjob
+    spec:
+      containers:
+      - name: orders-webjob
+        image: houssemdocker/orders-webjob:0.1
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "1"
+            memory: "200Mi"
+          requests:
+            cpu: "0.1"
+            memory: "100Mi"
+        env:
+        - name: RabbitMqUri
+          value: "amqp://guest:guest@rabbitmq-service//" # "/" is the name of the virtual host in RabbitMQ          
+---
+# Orders WebJob sevice
+kind: Service
+apiVersion: v1
+metadata:
+  name: orders-webjob-service
+spec:
+  selector:
+    app: orders-webjob
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30080
   type: NodePort
