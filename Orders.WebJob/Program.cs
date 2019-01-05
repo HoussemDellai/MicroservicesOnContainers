@@ -48,7 +48,8 @@ namespace Orders.WebJob
                 
             var confbuilder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
 
             IConfigurationRoot configuration = confbuilder.Build();
 
