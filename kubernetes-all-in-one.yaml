@@ -16,6 +16,7 @@ spec:
       containers:
       - name: frontend-mvc
         image: houssemdocker/frontend-mvc:0.1
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:
@@ -65,6 +66,7 @@ spec:
       containers:
       - name: catalog-api
         image: houssemdocker/catalog-api:0.1
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:
@@ -162,6 +164,7 @@ spec:
       containers:
       - name: basket-api
         image: houssemdocker/basket-api:0.1
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:
@@ -274,8 +277,8 @@ spec:
     app: rabbitmq
   ports:
   - protocol: TCP
-    port: 30672
-    targetPort: 5672
+    port: 5672
+    #targetPort: 5672
     #nodePort: 30672
   type: ClusterIP
 ---
@@ -311,11 +314,14 @@ spec:
       containers:
       - name: orders-webjob
         image: houssemdocker/orders-webjob:0.1
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         env:
           - name: RabbitMqUri
             value: amqp://guest:guest@rabbitmq-service//
+          - name: RabbitMqService
+            value: rabbitmq-service
 ---
 # Orders WebJob sevice
 kind: Service

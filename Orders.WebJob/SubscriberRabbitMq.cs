@@ -20,18 +20,17 @@ public class SubscriberRabbitMq
         public void SubscribeAndProcessOrdersFromRabbitMq()
         {
             System.Console.WriteLine("SubscribeAndProcessOrdersFromRabbitMq..");
-            System.Console.WriteLine(Environment.GetEnvironmentVariable("RabbitMqService"));
             
             var factory = new ConnectionFactory
             {
-                UserName = "guest",
-                Password = "guest",
-                HostName = Environment.GetEnvironmentVariable("RabbitMqService"),
-                VirtualHost = "/",
-                //Uri = new Uri(_rabbitMqUri)
+                // UserName = "guest",
+                // Password = "guest",
+                // HostName = Environment.GetEnvironmentVariable("RabbitMqService"),
+                // VirtualHost = "/",
+                Uri = new Uri(_rabbitMqUri)
             };
 
-            System.Console.WriteLine(factory.Uri);
+            System.Console.WriteLine("factory.Uri : " + factory.Uri);
 
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
