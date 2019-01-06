@@ -45,6 +45,38 @@ namespace Frontend.Mvc.Controllers
 
             return View(products);
         }
+
+        // GET: Products/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Products/Create
+        [HttpPost]
+        public async Task<IActionResult> Create([Bind("Id,Name,Price")] Product product)
+        {
+            if (!ModelState.IsValid)
+                return View(product);
+
+            var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
+
+            var client = new HttpClient();
+
+            var productJson = JsonConvert.SerializeObject(product);
+
+            HttpContent content = new StringContent(productJson);
+
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            var response = await client.PostAsync(catalogApiUrl + "/api/Products", content);
+
+            if (!response.IsSuccessStatusCode)
+                return View(product);
+
+            return RedirectToAction(nameof(Index));
+        }
+
         // public async Task<IActionResult> Index()
         // {
         //     var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
@@ -74,40 +106,6 @@ namespace Frontend.Mvc.Controllers
             }
 
             return View(product);
-        }
-
-        // GET: Products/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Products/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[ValidateAntiForgeryToken]
-        [HttpPost]
-        public async Task<IActionResult> Create([Bind("Id,Name,Price")] Product product)
-        {
-            if (!ModelState.IsValid)
-                return View(product);
-
-            var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
-
-            var client = new HttpClient();
-
-            var productJson = JsonConvert.SerializeObject(product);
-
-            HttpContent content = new StringContent(productJson);
-
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            var response = await client.PostAsync(catalogApiUrl + "/api/Products", content);
-
-            if (!response.IsSuccessStatusCode)
-                return View(product);
-
-            return RedirectToAction(nameof(Index));
         }
 
         // GET: Products/AddToBasket/5
