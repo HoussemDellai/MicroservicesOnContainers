@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -14,28 +15,30 @@ namespace Frontend.Mvc.Controllers
     public class BasketItemsController : Controller
     {
         IConfiguration _configuration;
+        private readonly string _apiGatewayUrl;
         private readonly FrontendMvcContext _context;
 
         public BasketItemsController(IConfiguration configuration)
         {
             _configuration = configuration;
+            _apiGatewayUrl = _configuration.GetValue<string>("ApiGatewayUrl");
+            _apiGatewayUrl = "http://104.45.20.246";
+            Console.WriteLine($"_apiGatewayUrl : {_apiGatewayUrl}");
             _context = null;
         }
 
         // GET: BasketItems
         public async Task<IActionResult> Checkout()
         {
-            var basketApiUrl = _configuration.GetValue<string>("BasketApiUrl");
-
             var client = new HttpClient();
 
-            var json = await client.GetStringAsync(basketApiUrl + "/api/BasketItems");
+            var json = await client.GetStringAsync(_apiGatewayUrl + "/api/BasketItems");
 
             HttpContent content = new StringContent(json);
 
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            var response = await client.PostAsync(basketApiUrl + "/api/BasketItems/checkout", content);
+            var response = await client.PostAsync(_apiGatewayUrl + "/api/BasketItems/checkout", content);
 
             if (!response.IsSuccessStatusCode)
                 return BadRequest();
@@ -46,12 +49,16 @@ namespace Frontend.Mvc.Controllers
         // GET: BasketItems
         public async Task<IActionResult> Index()
         {
-            var basketApiUrl = _configuration.GetValue<string>("BasketApiUrl");
-
             var client = new HttpClient();
 
-            var json = await client.GetStringAsync(basketApiUrl + "/api/BasketItems");
+            var request = new HttpRequestMessage(HttpMethod.Get, _apiGatewayUrl);
 
+            request.Headers.Add("Host", "mvc-client-basket");
+
+            var response = await client.SendAsync(request);
+
+            var json = await response.Content.ReadAsStringAsync();
+            
             var basketItems = JsonConvert.DeserializeObject<List<BasketItem>>(json);
 
             return View(basketItems);
