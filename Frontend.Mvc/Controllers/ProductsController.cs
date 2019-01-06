@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -13,27 +14,24 @@ namespace Frontend.Mvc.Controllers
 {
     public class ProductsController : Controller
     {
-        private IConfiguration _configuration;
-        private readonly FrontendMvcContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly string _apiGatewayUrl;
+
 
         public ProductsController(IConfiguration configuration)
         {
             _configuration = configuration;
-            _context = null;
+            _apiGatewayUrl = _configuration.GetValue<string>("ApiGatewayUrl");
+            _apiGatewayUrl = "http://104.45.20.246";
+            Console.WriteLine($"_apiGatewayUrl : {_apiGatewayUrl}");
         }
-        //public ProductsController(FrontendMvcContext context)
-        //{
-        //    _context = context;
-        //}
 
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var catalogApiUrl = _configuration.GetValue<string>("ApiGatewayUrl");
-            catalogApiUrl = "http://104.45.20.246";
             var client = new HttpClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, catalogApiUrl);
+            var request = new HttpRequestMessage(HttpMethod.Get, _apiGatewayUrl);
 
             request.Headers.Add("Host", "mvc-client-catalog");
             
@@ -58,9 +56,7 @@ namespace Frontend.Mvc.Controllers
         {
             if (!ModelState.IsValid)
                 return View(product);
-
-            var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
-
+            
             var client = new HttpClient();
 
             var productJson = JsonConvert.SerializeObject(product);
@@ -69,45 +65,22 @@ namespace Frontend.Mvc.Controllers
 
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            var response = await client.PostAsync(catalogApiUrl + "/api/Products", content);
+            var request = new HttpRequestMessage(HttpMethod.Post, _apiGatewayUrl);
 
+            request.Headers.Add("Host", "mvc-client-catalog");
+
+            request.Content = content;
+
+            var response = await client.SendAsync(request);
+
+            var json = await response.Content.ReadAsStringAsync();
+            
             if (!response.IsSuccessStatusCode)
                 return View(product);
 
             return RedirectToAction(nameof(Index));
         }
-
-        // public async Task<IActionResult> Index()
-        // {
-        //     var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
-
-        //     var client = new HttpClient();
-
-        //     var json = await client.GetStringAsync(catalogApiUrl + "/api/Products");
-
-        //     var products = JsonConvert.DeserializeObject<List<Product>>(json);
-
-        //     return View(products);
-        // }
-
-        // GET: Products/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
-        }
-
+        
         // GET: Products/AddToBasket/5
         public async Task<IActionResult> AddToBasket(int? id)
         {
@@ -160,91 +133,6 @@ namespace Frontend.Mvc.Controllers
                 return View(product);
 
             return RedirectToAction(nameof(Index));
-        }
-
-        // GET: Products/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var product = await _context.Product.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
-
-        // POST: Products/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price")] Product product)
-        {
-            if (id != product.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductExists(product.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(product);
-        }
-
-        // GET: Products/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
-        }
-
-        // POST: Products/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var product = await _context.Product.FindAsync(id);
-            _context.Product.Remove(product);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ProductExists(int id)
-        {
-            return _context.Product.Any(e => e.Id == id);
         }
     }
 }
