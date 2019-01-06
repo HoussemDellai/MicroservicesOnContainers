@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Orders.WebJob.Models;
 using RabbitMQ.Client;

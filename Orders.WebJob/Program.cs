@@ -1,12 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System.IO;
-using System;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System.Text;
+﻿using System;
 
 namespace Orders.WebJob
 {
