@@ -24,14 +24,11 @@ namespace Basket.Api.Controllers
         private readonly BasketContext _context;
         private readonly IConfiguration _configuration;
 
-        public BasketItemsController(IConfiguration configuration)
+        public BasketItemsController(BasketContext context, IConfiguration configuration)
         {
+            _context = context;
             _configuration = configuration;
         }
-        // public BasketItemsController(BasketContext context)
-        // {
-        //     _context = context;
-        // }
 
         // POST: api/BasketItems/checkout
         [Route("checkout")]

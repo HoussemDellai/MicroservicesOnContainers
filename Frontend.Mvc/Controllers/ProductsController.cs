@@ -110,9 +110,7 @@ namespace Frontend.Mvc.Controllers
 
             if (!ModelState.IsValid)
                 return View(product);
-
-            var catalogApiUrl = _configuration.GetValue<string>("BasketApiUrl");
-
+            
             var client = new HttpClient();
 
             var basketItem = new BasketItem
@@ -127,8 +125,14 @@ namespace Frontend.Mvc.Controllers
 
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            var response = await client.PostAsync(catalogApiUrl + "/api/BasketItems", content);
+            var request = new HttpRequestMessage(HttpMethod.Post, _apiGatewayUrl);
 
+            request.Headers.Add("Host", "mvc-client-basket");
+
+            request.Content = content;
+
+            var response = await client.SendAsync(request);
+            
             if (!response.IsSuccessStatusCode)
                 return View(product);
 
