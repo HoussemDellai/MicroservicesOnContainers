@@ -320,8 +320,6 @@ spec:
         env:
           - name: RabbitMqUri
             value: amqp://guest:guest@rabbitmq-service//
-          - name: RabbitMqService
-            value: rabbitmq-service
 ---
 # Orders WebJob sevice
 kind: Service

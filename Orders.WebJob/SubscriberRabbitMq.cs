@@ -23,10 +23,6 @@ public class SubscriberRabbitMq
             
             var factory = new ConnectionFactory
             {
-                // UserName = "guest",
-                // Password = "guest",
-                // HostName = Environment.GetEnvironmentVariable("RabbitMqService"),
-                // VirtualHost = "/",
                 Uri = new Uri(_rabbitMqUri)
             };
 
