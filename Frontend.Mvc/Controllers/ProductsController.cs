@@ -85,12 +85,17 @@ namespace Frontend.Mvc.Controllers
             {
                 return NotFound();
             }
-
-            var catalogApiUrl = _configuration.GetValue<string>("CatalogApiUrl");
-
+            
             var client = new HttpClient();
 
-            var json = await client.GetStringAsync(catalogApiUrl + "/api/Products/" + id);
+            var request = new HttpRequestMessage(HttpMethod.Get, _apiGatewayUrl + "/" + id);
+
+            request.Headers.Add("Host", "mvc-client-catalog");
+
+            var response = await client.SendAsync(request);
+
+            var json = await response.Content.ReadAsStringAsync();
+            //var json = await client.GetStringAsync(_apiGatewayUrl + id);
 
             var product = JsonConvert.DeserializeObject<Product>(json);
 

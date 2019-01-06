@@ -28,13 +28,25 @@ namespace Frontend.Mvc.Controllers
         {
             var client = new HttpClient();
 
-            var json = await client.GetStringAsync(_apiGatewayUrl + "/api/BasketItems");
+            var basketItems = await GetBasketItemsAsync();
 
-            HttpContent content = new StringContent(json);
+            var jsonBasket = JsonConvert.SerializeObject(basketItems);//await client.GetStringAsync(_apiGatewayUrl + "/api/BasketItems");
+
+            HttpContent content = new StringContent(jsonBasket);
 
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            var response = await client.PostAsync(_apiGatewayUrl + "/api/BasketItems/checkout", content);
+            //var response = await client.PostAsync(_apiGatewayUrl + "/checkout", content);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, _apiGatewayUrl + "/checkout");
+
+            request.Headers.Add("Host", "mvc-client-basket");
+
+            request.Content = content;
+
+            var response = await client.SendAsync(request);
+
+            var json = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
                 return BadRequest();
@@ -45,6 +57,13 @@ namespace Frontend.Mvc.Controllers
         // GET: BasketItems
         public async Task<IActionResult> Index()
         {
+            var basketItems = await GetBasketItemsAsync();
+
+            return View(basketItems);
+        }
+
+        private async Task<List<BasketItem>> GetBasketItemsAsync()
+        {
             var client = new HttpClient();
 
             var request = new HttpRequestMessage(HttpMethod.Get, _apiGatewayUrl);
@@ -54,10 +73,10 @@ namespace Frontend.Mvc.Controllers
             var response = await client.SendAsync(request);
 
             var json = await response.Content.ReadAsStringAsync();
-            
+
             var basketItems = JsonConvert.DeserializeObject<List<BasketItem>>(json);
 
-            return View(basketItems);
+            return basketItems;
         }
     }
 }
