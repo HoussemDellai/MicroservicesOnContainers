@@ -30,14 +30,12 @@ namespace Frontend.Mvc.Controllers
 
             var basketItems = await GetBasketItemsAsync();
 
-            var jsonBasket = JsonConvert.SerializeObject(basketItems);//await client.GetStringAsync(_apiGatewayUrl + "/api/BasketItems");
+            var jsonBasket = JsonConvert.SerializeObject(basketItems);
 
             HttpContent content = new StringContent(jsonBasket);
 
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            //var response = await client.PostAsync(_apiGatewayUrl + "/checkout", content);
-
+            
             var request = new HttpRequestMessage(HttpMethod.Post, _apiGatewayUrl + "/checkout");
 
             request.Headers.Add("Host", "mvc-client-basket");
