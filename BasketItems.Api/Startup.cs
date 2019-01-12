@@ -39,7 +39,7 @@ namespace Basket.Api
             //TODO: use DI
             services.AddHealthChecks()
                 .AddCheck("SQL",
-                    new SqlConnectionHealthCheck(Configuration.GetConnectionString("CatalogContext")));
+                    new SqlConnectionHealthCheck(Configuration.GetConnectionString("BasketContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
