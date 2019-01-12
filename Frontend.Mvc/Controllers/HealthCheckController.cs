@@ -24,8 +24,8 @@ namespace Frontend.Mvc.Controllers
         public async Task<IActionResult> Index()
         {
             // Kong doesn't natively support composing API calls.
-            var jsonCatalogHealth = await GetHealthCheck("mvc-client-catalog");
-            var jsonBasketHealth = await GetHealthCheck("mvc-client-basket");
+            var jsonCatalogHealth = await GetHealthCheck("catalog-healthz");
+            var jsonBasketHealth = await GetHealthCheck("basket-healthz");
 
             var healthChecks = new List<HealthCheckStatus>
             {

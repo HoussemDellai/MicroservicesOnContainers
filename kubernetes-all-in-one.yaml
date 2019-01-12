@@ -321,7 +321,7 @@ spec:
           - name: RabbitMqUri
             value: amqp://guest:guest@rabbitmq-service//
 ---
-# Orders WebJob sevice
+# Orders WebJob service
 kind: Service
 apiVersion: v1
 metadata:
@@ -335,3 +335,114 @@ spec:
     targetPort: 80
     nodePort: 30080
   type: NodePort
+---
+# Prometheus deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+spec:
+  selector:
+    matchLabels:
+      app: prometheus
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9090
+---
+# Prometheus service
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-service
+spec:
+  selector:
+    app: prometheus
+  ports:
+  - protocol: TCP
+    port: 9090
+    targetPort: 9090
+  type: LoadBalancer
+---
+# Grafana deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-deployment
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+---
+# Grafana service
+kind: Service
+apiVersion: v1
+metadata:
+  name: grafana-service
+spec:
+  selector:
+    app: grafana
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+  type: LoadBalancer
+---
+# Konga deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: konga-deployment
+spec:
+  selector:
+    matchLabels:
+      app: konga
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: konga
+    spec:
+      containers:
+      - name: konga
+        image: pantsel/konga
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 1337
+        env:
+          - name: NODE_TLS_REJECT_UNAUTHORIZED # so that Konga can connect on kong's https.
+            value: "0"
+---
+# Konga service
+kind: Service
+apiVersion: v1
+metadata:
+  name: konga-service
+spec:
+  selector:
+    app: konga
+  ports:
+  - protocol: TCP
+    port: 1337
+    targetPort: 1337
+  type: LoadBalancer
