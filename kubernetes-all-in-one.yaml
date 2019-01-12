@@ -176,7 +176,7 @@ spec:
             memory: "100Mi"
         env:
           - name: ConnectionStrings__BasketContext
-            value: "Server=basket-mssql-service;Database=CatalogContext;User Id=sa;Password=@Aa123456"
+            value: "Server=basket-mssql-service;Database=BasketContext;User Id=sa;Password=@Aa123456"
           - name: RabbitMqUri
             value: amqp://guest:guest@rabbitmq-service//
 ---
