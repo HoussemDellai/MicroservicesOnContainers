@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Basket.Api.Models;
 using HealthChecks;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Basket.Api
@@ -34,12 +35,13 @@ namespace Basket.Api
             {
                 c.SwaggerDoc("v1", new Info { Title = "Basket API", Version = "v1" });
             });
-
-
+            
             //TODO: use DI
             services.AddHealthChecks()
                 .AddCheck("SQL",
                     new SqlConnectionHealthCheck(Configuration.GetConnectionString("BasketContext")));
+
+            services.AddSingleton<RedisCacheClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -23,17 +23,19 @@ namespace Basket.Api.Controllers
 
         private readonly BasketContext _context;
         private readonly IConfiguration _configuration;
+        private readonly RedisCacheClient _redisCacheClient;
 
-        public BasketItemsController(BasketContext context, IConfiguration configuration)
+        public BasketItemsController(BasketContext context, IConfiguration configuration, RedisCacheClient redisCacheClient)
         {
             _context = context;
             _configuration = configuration;
+            _redisCacheClient = redisCacheClient;
         }
 
         // POST: api/BasketItems/checkout
         [Route("checkout")]
         [HttpPost]
-        public async Task<IActionResult> Checkout([FromBody] List<BasketItem> basketItems)
+        public IActionResult Checkout([FromBody] List<BasketItem> basketItems)
         {
             Console.WriteLine("Started Checkout ...");
 
@@ -44,14 +46,14 @@ namespace Basket.Api.Controllers
 
             var order = CreateOrder(basketItems);
 
-            await PublishOrderUsingRabbitMq(order);
+            PublishOrderUsingRabbitMq(order);
 
             //await PublishOrderUsingAzureServiceBus(order);
 
             return Ok();
         }
 
-        private async Task PublishOrderUsingRabbitMq(Order order)
+        private void PublishOrderUsingRabbitMq(Order order)
         {
             Console.WriteLine("Started PublishOrderUsingRabbitMq");
             var factory = new ConnectionFactory();
@@ -184,8 +186,9 @@ namespace Basket.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            _context.BasketItem.Add(basketItem);
-            await _context.SaveChangesAsync();
+            _redisCacheClient.Do();
+            //_context.BasketItem.Add(basketItem);
+            //await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetBasketItem", new { id = basketItem.Id }, basketItem);
         }
