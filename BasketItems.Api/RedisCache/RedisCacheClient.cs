@@ -1,6 +1,9 @@
+using Basket.Api.Models;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 using System;
+using System.Collections.Generic;
 
 namespace Basket.Api
 {
@@ -8,48 +11,50 @@ namespace Basket.Api
     {
         private static string RedisCacheConnection;
 
-        private static Lazy<ConnectionMultiplexer> lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(RedisCacheConnection));
+        //private static ConnectionMultiplexer _connection = ConnectionMultiplexer.Connect(RedisCacheConnection);
+         private static Lazy<ConnectionMultiplexer> _lazyConnection = new Lazy<ConnectionMultiplexer>(
+             () => ConnectionMultiplexer.Connect(RedisCacheConnection));
 
-        public static ConnectionMultiplexer Connection => lazyConnection.Value;
+        public static ConnectionMultiplexer Connection => _lazyConnection.Value;
 
         public RedisCacheClient(IConfiguration configuration)
         {
             RedisCacheConnection = configuration.GetValue<string>("RedisCacheConnection");
         }
 
-        public void Do()
+        public void Add(BasketItem basketItem)
         {
-            // Connection refers to a property that returns a ConnectionMultiplexer
-            // as shown in the previous example.
-            IDatabase cache = lazyConnection.Value.GetDatabase();
+            IDatabase cache = _lazyConnection.Value.GetDatabase();
 
-            // Perform cache operations using the cache object...
+            var existing = cache.StringGet("basket-cache");
 
-            // Simple PING command
-            string cacheCommand = "PING";
-            Console.WriteLine("\nCache command  : " + cacheCommand);
-            Console.WriteLine("Cache response : " + cache.Execute(cacheCommand).ToString());
+            var items = new List<BasketItem>();
 
-            // Simple get and put of integral data types into the cache
-            cacheCommand = "GET Message";
-            Console.WriteLine("\nCache command  : " + cacheCommand + " or StringGet()");
-            Console.WriteLine("Cache response : " + cache.StringGet("Message").ToString());
+            if (!existing.IsNull)
+            { 
+                items = JsonConvert.DeserializeObject<List<BasketItem>>(existing);
+            }
+            
+            items.Add(basketItem);
 
-            cacheCommand = "SET Message \"Hello! The cache is working from a .NET Core console app!\"";
-            Console.WriteLine("\nCache command  : " + cacheCommand + " or StringSet()");
-            Console.WriteLine("Cache response : " + cache.StringSet("Message", "Hello! The cache is working from a .NET Core console app!").ToString());
+            var basketItems = JsonConvert.SerializeObject(items);
 
-            // Demonstrate "SET Message" executed as expected...
-            cacheCommand = "GET Message";
-            Console.WriteLine("\nCache command  : " + cacheCommand + " or StringGet()");
-            Console.WriteLine("Cache response : " + cache.StringGet("Message").ToString());
+            cache.StringSet("basket-cache", basketItems);
 
-            // Get the client list, useful to see if connection list is growing...
-            cacheCommand = "CLIENT LIST";
-            Console.WriteLine("\nCache command  : " + cacheCommand);
-            Console.WriteLine("Cache response : \n" + cache.Execute("CLIENT", "LIST").ToString().Replace("id=", "id="));
+            //_lazyConnection.Value.Dispose();
+        }
 
-            lazyConnection.Value.Dispose();
+        public List<BasketItem> Get()
+        {
+            IDatabase cache = _lazyConnection.Value.GetDatabase();
+
+            var json = cache.StringGet("basket-cache");
+
+            // _lazyConnection.Value.Dispose();
+
+            var basketItems = JsonConvert.DeserializeObject<List<BasketItem>>(json);
+
+            return basketItems;
         }
     }
 }

@@ -45,6 +45,7 @@ services:
       - 6300:80
     environment: 
       ConnectionStrings__BasketContext: Server=basket.db;Database=BasketContext;User Id=sa;Password=@Aa123456
+      RedisCacheConnection: "redis-cache"    
     depends_on:
       - basket.db
 
@@ -66,3 +67,15 @@ services:
     environment: 
       RabbitMqUri: "amqp://guest:guest@localhost:5672//" # "/" is the name of the virtual host in RabbitMQ
       ConnectionStrings__ServiceBusConnectionString: Endpoint=sb://microservicesoncontainers.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=pydtJlzPcGSoHLuO/YcUi6MDZ/liZRI7BTMiwP4glXA=
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+
+  redis-cache:
+    container_name: redis-cache
+    image: redis
+    ports:
+      - 6379:6379

@@ -120,7 +120,8 @@ namespace Basket.Api.Controllers
         [HttpGet]
         public IEnumerable<BasketItem> GetBasketItem()
         {
-            return _context.BasketItem;
+            return _redisCacheClient.Get();
+            //return _context.BasketItem;
         }
 
         // GET: api/BasketItems/5
@@ -186,7 +187,7 @@ namespace Basket.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            _redisCacheClient.Do();
+            _redisCacheClient.Add(basketItem);
             //_context.BasketItem.Add(basketItem);
             //await _context.SaveChangesAsync();
 

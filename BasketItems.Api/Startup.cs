@@ -41,7 +41,7 @@ namespace Basket.Api
                 .AddCheck("SQL",
                     new SqlConnectionHealthCheck(Configuration.GetConnectionString("BasketContext")));
 
-            services.AddSingleton<RedisCacheClient>();
+            services.AddTransient<RedisCacheClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
