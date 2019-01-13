@@ -11,8 +11,7 @@ namespace Basket.Api
     {
         private static string RedisCacheConnection;
 
-        //private static ConnectionMultiplexer _connection = ConnectionMultiplexer.Connect(RedisCacheConnection);
-         private static Lazy<ConnectionMultiplexer> _lazyConnection = new Lazy<ConnectionMultiplexer>(
+        private static Lazy<ConnectionMultiplexer> _lazyConnection = new Lazy<ConnectionMultiplexer>(
              () => ConnectionMultiplexer.Connect(RedisCacheConnection));
 
         public static ConnectionMultiplexer Connection => _lazyConnection.Value;
@@ -22,7 +21,7 @@ namespace Basket.Api
             RedisCacheConnection = configuration.GetValue<string>("RedisCacheConnection");
         }
 
-        public void Add(BasketItem basketItem)
+        public void AddBasketItem(BasketItem basketItem)
         {
             IDatabase cache = _lazyConnection.Value.GetDatabase();
 
@@ -44,7 +43,7 @@ namespace Basket.Api
             //_lazyConnection.Value.Dispose();
         }
 
-        public List<BasketItem> Get()
+        public List<BasketItem> GetAllBasketItems()
         {
             IDatabase cache = _lazyConnection.Value.GetDatabase();
 
