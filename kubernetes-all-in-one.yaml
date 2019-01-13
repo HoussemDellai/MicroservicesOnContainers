@@ -177,6 +177,8 @@ spec:
         env:
           - name: ConnectionStrings__BasketContext
             value: "Server=basket-mssql-service;Database=BasketContext;User Id=sa;Password=@Aa123456"
+          - name: RedisCacheConnection
+            value: redis-service
           - name: RabbitMqUri
             value: amqp://guest:guest@rabbitmq-service//
 ---
@@ -445,4 +447,40 @@ spec:
   - protocol: TCP
     port: 1337
     targetPort: 1337
+  type: LoadBalancer
+---
+# Redis deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:5.0.3
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6379
+---
+# Redis service
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis-service
+spec:
+  selector:
+    app: redis
+  ports:
+  - protocol: TCP
+    port: 6379
+    targetPort: 6379
   type: LoadBalancer

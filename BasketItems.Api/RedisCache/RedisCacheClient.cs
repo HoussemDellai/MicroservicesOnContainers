@@ -48,11 +48,13 @@ namespace Basket.Api
         {
             IDatabase cache = _lazyConnection.Value.GetDatabase();
 
-            var json = cache.StringGet("basket-cache");
+            RedisValue redisValue = cache.StringGet("basket-cache");
 
             // _lazyConnection.Value.Dispose();
 
-            var basketItems = JsonConvert.DeserializeObject<List<BasketItem>>(json);
+            if (redisValue.IsNullOrEmpty) return null;
+
+            var basketItems = JsonConvert.DeserializeObject<List<BasketItem>>(redisValue);
 
             return basketItems;
         }
